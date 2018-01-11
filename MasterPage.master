@@ -1,0 +1,91 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MasterPage.master.cs" Inherits="MasterPage" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <link href="Content/bootstrap.css" rel="stylesheet" />
+    <link href="Content/NewsVendor.css" rel="stylesheet" />
+    <asp:ContentPlaceHolder id="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form runat="server">
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <asp:HyperLink ID="IndexLink" runat="server" NavigateUrl="~/Index.aspx" CssClass="navbar-brand">News Vendor</asp:HyperLink>
+            </div>
+            
+            <div class="navbar-collapse collapse" id="navbar-main">
+                <ul class="nav navbar-nav">
+                    <li class="active">
+                        <asp:DropDownList ID="ArticleCategoriesIndex" runat="server" AutoPostBack="true" CssClass="form-control SelectControl" OnSelectedIndexChanged="ArticleCategoriesIndex_IndexChanged">
+
+                        </asp:DropDownList>
+                    </li>
+                    <li>
+                        <asp:Panel runat="server" ID="SearchPanel" DefaultButton="SearchButton" CssClass="form-inline SearchControl">
+                            <asp:TextBox runat="server" ID="SearchTextBox" CssClass="form-control mr-sm-2" placeholder="Search Article"></asp:TextBox>
+                            <asp:Button ID="SearchButton" CssClass="btn btn-default my-2 my-sm-0" OnClick="Search_Article" runat="server" Text="Search" />
+                        </asp:Panel>
+                    </li>
+                    <% if (Request.Cookies.AllKeys.Contains("NewsVendorCookie") && new Bitmask().checkEditor(int.Parse(Request.Cookies.Get("NewsVendorCookie")["role"])))
+                        {%>
+                    <li>
+                        <asp:HyperLink runat="server" ID="AddArticleLink" NavigateUrl="~/AddArticle.aspx">Add Article</asp:HyperLink>
+                    </li>
+                    <% } %>
+                    <% if (Request.Cookies.AllKeys.Contains("NewsVendorCookie") && new Bitmask().checkAdmin(int.Parse(Request.Cookies.Get("NewsVendorCookie")["role"])))
+                        {%>
+                    <li>
+                        <asp:HyperLink runat="server" ID="ManageUsersLink" NavigateUrl="~/ManageUsers.aspx">Manage Users</asp:HyperLink>
+                    </li>
+                    <% } %>
+                </ul>
+                <div class="navbar-form navbar-right">
+                    
+                    <% if (!Request.Cookies.AllKeys.Contains("NewsVendorCookie")) { %>
+                        <asp:Panel runat="server" ID="PanelSignIn" DefaultButton="SignIn">
+                            <asp:Literal ID="EroareBazaDate" runat="server"></asp:Literal>
+                            <div class="form-group">
+                                <asp:TextBox runat="server" ID="email" class="form-control" placeholder="Username"></asp:TextBox>
+                            </div>
+                            <div class="form-group">
+                                <asp:TextBox runat="server" ID="password" class="form-control" placeholder="Password" TextMode="Password"></asp:TextBox>
+                            </div>
+                            <asp:Button ID="SignIn" CssClass="btn btn-default" OnClick="Sign_In" runat="server" Text="Sign In" />
+                            <span>or</span>
+                            <asp:HyperLink ID="SignUpLink" runat="server" NavigateUrl="~/SignUp.aspx" CssClass="btn btn-default">Sign Up</asp:HyperLink>
+                        </asp:Panel>
+                    <% } else { %>
+                        
+                        <asp:Literal runat="server" ID="Greeting" Text="Welcome,  "></asp:Literal>
+                        <asp:HyperLink runat="server" ID="ProfileLink" NavigateUrl="~/UserProfile.aspx">    
+                            <%=  ( !string.IsNullOrEmpty( Request.Cookies["NewsVendorCookie"].Values["firstName"] ) ? Request.Cookies["NewsVendorCookie"].Values["firstName"] : Request.Cookies["NewsVendorCookie"].Values["email"] )%>
+                        </asp:HyperLink>
+                        <asp:Button ID="SignOut" CssClass="btn btn-default" OnClick="Sign_Out" runat="server" Text="Sign Out" />
+                    
+                    <% } %>
+
+                </div>
+                    
+            </div>
+            
+        </div>
+    </div>
+    
+    <div style="margin-top: 5%">
+        <asp:ContentPlaceHolder id="ContentPlaceHolder" runat="server">
+        
+        </asp:ContentPlaceHolder>
+    </div>
+
+</form>
+</body>
+</html>
